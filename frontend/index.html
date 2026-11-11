@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Loan Verification & Approval System | Blockchain & Explainable AI</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="navbar">
+        <div class="brand">
+            <div class="brand-icon">⛓️</div>
+            <div>
+                SmartLoan <span class="brand-tag">Blockchain + AI</span>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <button class="nav-btn active" data-section="applicant-section" onclick="AppFlow.showSection('applicant-section')">
+                📋 Applicant Portal
+            </button>
+            <button class="nav-btn" data-section="blockchain-section" onclick="AppFlow.showSection('blockchain-section')">
+                ⛓️ Blockchain Ledger
+            </button>
+            <button class="nav-btn" data-section="admin-section" onclick="AppFlow.showSection('admin-section')">
+                🏛️ Admin Dashboard
+            </button>
+            <button class="nav-btn" data-section="monitoring-section" onclick="AppFlow.showSection('monitoring-section')">
+                🛰️ Real-Time Monitoring
+            </button>
+
+            <!-- Role Switcher & User Profile -->
+            <div style="margin-left: 0.5rem; display:flex; align-items:center; gap:0.5rem;">
+                <button class="btn btn-secondary" style="padding:0.4rem 0.8rem; font-size:0.8rem;" onclick="Auth.switchRole(Auth.currentUser?.role === 'admin' ? 'applicant' : 'admin')">
+                    🔄 Switch Role
+                </button>
+                <div id="user-badge-container"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="container">
+
+        <!-- ========================================================
+             SECTION 1: APPLICANT VERIFICATION PIPELINE WIZARD
+             ======================================================== -->
+        <section id="applicant-section" class="view-section active">
+            
+            <div class="hero-banner">
+                <h1 class="hero-title">Smart Loan Application & 7-Gate Verification Portal</h1>
+                <p class="hero-desc">
+                    Enter your application details below. The system will step-by-step verify your Document OCR, Live Facial Biometrics, Mobile TOTP Possession, Multi-Attribute CIBIL Credit Profile, SHA-256 Blockchain Ledger, and Explainable Credit Risk ML (SHAP).
+                </p>
+            </div>
+
+            <!-- Stepper Progress Bar -->
+            <div class="stepper">
+                <div class="step-item active" data-step="1" onclick="AppFlow.goToStep(1)">
+                    <div class="step-circle">1</div>
+                    <div class="step-label">KYC Profile</div>
+                </div>
+                <div class="step-divider"></div>
+
+                <div class="step-item" data-step="2" onclick="AppFlow.goToStep(2)">
+                    <div class="step-circle">2</div>
+                    <div class="step-label">Loan Terms</div>
+                </div>
+                <div class="step-divider"></div>
+
+                <div class="step-item" data-step="3" onclick="AppFlow.goToStep(3)">
+                    <div class="step-circle">3</div>
+                    <div class="step-label">Document OCR</div>
+                </div>
+                <div class="step-divider"></div>
+
+                <div class="step-item" data-step="4" onclick="AppFlow.goToStep(4)">
+                    <div class="step-circle">4</div>
+                    <div class="step-label">Face Biometrics</div>
+                </div>
+                <div class="step-divider"></div>
+
+                <div class="step-item" data-step="5" onclick="AppFlow.goToStep(5)">
+                    <div class="step-circle">5</div>
+                    <div class="step-label">Mobile OTP</div>
+                </div>
+                <div class="step-divider"></div>
+
+                <div class="step-item" data-step="6" onclick="AppFlow.goToStep(6)">
+                    <div class="step-circle">6</div>
+                    <div class="step-label">CIBIL Bureau</div>
+                </div>
+                <div class="step-divider"></div>
+
+                <div class="step-item" data-step="7" onclick="AppFlow.goToStep(7)">
+                    <div class="step-circle">7</div>
+                    <div class="step-label">Decision & SHAP</div>
+                </div>
+            </div>
+
+            <!-- STEP 1: Applicant Profile Registration -->
+            <div id="panel-step-1" class="wizard-panel glass-card">
+                <div class="glass-card-header">
+                    <div>
+                        <h2 class="card-title">👤 Step 1: Real-Time Applicant Identity & Data Collection</h2>
+                        <div style="font-size:0.8rem; color:var(--accent-cyan); margin-top:2px;">
+                            ⚡ Real-Time Field Verification & Syntax Check Active as you type
+                        </div>
+                    </div>
+                    <span class="status-pill status-pending" id="display-applicant-id">UNREGISTERED</span>
+                </div>
+
+                <!-- Real-Time Data Collection Health Banner -->
+                <div style="background:rgba(99,102,241,0.08); border:1px solid var(--border-highlight); border-radius:var(--radius-md); padding:0.85rem 1.25rem; margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem;">
+                    <div style="display:flex; align-items:center; gap:0.6rem;">
+                        <span class="live-pulse-dot"></span>
+                        <span style="font-size:0.85rem; font-weight:600; color:var(--text-primary);">Inline KYC Data Collection Stream</span>
+                    </div>
+                    <div style="display:flex; align-items:center; gap:0.75rem;">
+                        <span style="font-size:0.8rem; color:var(--text-muted);">Live DTI Ratio:</span>
+                        <span id="realtime-dti-badge" class="status-pill status-verified">PRIME SOLVENCY (5.3% DTI)</span>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Legal Name (as per Govt ID):</label>
+                        <input type="text" id="prof-name" placeholder="e.g. Priya Sharma" value="Priya Sharma">
+                        <div id="prof-name-valid-badge" class="field-valid-tag"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth (YYYY-MM-DD):</label>
+                        <input type="date" id="prof-dob" value="1994-06-15">
+                        <div id="prof-dob-valid-badge" class="field-valid-tag"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Registered Mobile Number:</label>
+                        <input type="tel" id="prof-mobile" placeholder="e.g. 9876543210" value="9876543210">
+                        <div id="prof-mobile-valid-badge" class="field-valid-tag"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address:</label>
+                        <input type="email" id="prof-email" placeholder="e.g. priya.sharma@example.com" value="priya.sharma@example.com">
+                        <div id="prof-email-valid-badge" class="field-valid-tag"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Permanent Account Number (PAN):</label>
+                        <input type="text" id="prof-pan" placeholder="e.g. ABCPS1234D" value="ABCPS1234D" style="text-transform:uppercase;">
+                        <div id="prof-pan-valid-badge" class="field-valid-tag"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Monthly In-Hand Income (INR):</label>
+                        <input type="number" id="prof-income" placeholder="e.g. 95000" value="95000" step="5000">
+                    </div>
+                    <div class="form-group">
+                        <label>Existing Monthly Loan EMIs (INR):</label>
+                        <input type="number" id="prof-existing-emi" placeholder="e.g. 5000" value="5000" step="1000">
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem; text-align: right;">
+                    <button class="btn btn-primary btn-lg" onclick="AppFlow.submitProfile()">
+                        Save Profile & Proceed to Loan Terms ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 2: Loan Amount & EMI Calculator with Real-Time Solvency Modeler -->
+            <div id="panel-step-2" class="wizard-panel glass-card" style="display:none;">
+                <div class="glass-card-header">
+                    <div>
+                        <h2 class="card-title">💰 Step 2: Real-Time Loan Modeler & EMI Calculator</h2>
+                        <div style="font-size:0.8rem; color:var(--accent-cyan); margin-top:2px;">
+                            ⚡ Live interest amortization and post-loan leverage modeler
+                        </div>
+                    </div>
+                    <span class="status-pill status-pending" id="display-loan-id">DRAFT</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Requested Loan Amount (INR):</label>
+                        <input type="number" id="loan-amount-input" value="500000" step="25000">
+                    </div>
+                    <div class="form-group">
+                        <label>Tenure (Months):</label>
+                        <select id="loan-tenure-input">
+                            <option value="12">12 Months (1 Year)</option>
+                            <option value="24">24 Months (2 Years)</option>
+                            <option value="36" selected>36 Months (3 Years)</option>
+                            <option value="48">48 Months (4 Years)</option>
+                            <option value="60">60 Months (5 Years)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Loan Purpose:</label>
+                        <select id="loan-purpose-input">
+                            <option value="Home Renovation">Home Renovation</option>
+                            <option value="Personal / Medical">Personal / Medical</option>
+                            <option value="Debt Consolidation">Debt Consolidation</option>
+                            <option value="Vehicle Purchase">Vehicle Purchase</option>
+                            <option value="Business Expansion">Business Expansion</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="background:rgba(99,102,241,0.1); padding:1rem; border-radius:var(--radius-sm); border:1px solid var(--border-highlight);">
+                        <label style="color:var(--accent-indigo-light);">Calculated Monthly EMI (at 10.5% p.a.):</label>
+                        <div id="calculated-emi-display" style="font-size:1.6rem; font-weight:800; color:#fff;">INR 16,251</div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:var(--text-muted); margin-top:4px;">
+                            <span>Total Interest: <strong id="calculated-interest-display" style="color:#fff;">INR 85,043</strong></span>
+                            <span>Projected DTI: <strong id="projected-dti-display" style="color:var(--accent-emerald);">22.3%</strong></span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem; display:flex; justify-content:space-between;">
+                    <button class="btn btn-secondary" onclick="AppFlow.goToStep(1)">⬅ Back</button>
+                    <button class="btn btn-primary btn-lg" onclick="AppFlow.submitLoanApplication()">
+                        Confirm Application & Upload Documents ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Document Upload & Realtime OCR -->
+            <div id="panel-step-3" class="wizard-panel glass-card" style="display:none;">
+                <div class="glass-card-header">
+                    <div>
+                        <h2 class="card-title">📄 Step 3: Real-Time Document Ingestion & OCR Scanner</h2>
+                        <div style="font-size:0.8rem; color:var(--accent-cyan); margin-top:2px;">
+                            ⚡ Automated laser scanning and instant field extraction upon document selection
+                        </div>
+                    </div>
+                    <span id="ocr-status-badge" class="status-pill status-pending">PENDING</span>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Document Category:</label>
+                        <select id="doc-type-select">
+                            <option value="PAN">PAN Card (Govt of India)</option>
+                            <option value="AADHAAR">Aadhaar Card (UIDAI)</option>
+                            <option value="DRIVING_LICENSE">Driving Licence</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Select Sample Preset (Auto-Triggers Live Scan):</label>
+                        <select id="doc-preset-select">
+                            <!-- Populated via API -->
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Upload Document Image (PNG/JPG/PDF):</label>
+                        <input type="file" id="doc-file-input" accept="image/*,.pdf,.txt">
+                    </div>
+                </div>
+
+                <!-- Live Laser Scanner Animation Overlay -->
+                <div id="ocr-laser-scanner" class="ocr-laser-scan" style="display:none; margin:1rem 0; height:45px; background:rgba(99,102,241,0.15); border:1px solid var(--accent-indigo); border-radius:var(--radius-sm); position:relative; overflow:hidden;">
+                    <div class="ocr-laser-line"></div>
+                    <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:600; color:var(--accent-cyan);">
+                        ⚡ REAL-TIME OCR ENGINE: SCANNING DOCUMENT & EXTRACTING TEXT PRIMITIVES...
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.25rem;">
+                    <button class="btn btn-primary" onclick="AppFlow.runDocumentOCR()">
+                        🔍 Re-Scan & Extract Identity Primitives
+                    </button>
+                </div>
+
+                <!-- OCR Extraction Output Box -->
+                <div id="ocr-result-box" style="display:none; margin-top:1.5rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem;">
+                    <h3 style="font-size:1rem; margin-bottom:0.75rem; color:var(--accent-cyan);">OCR Structured Extraction Results:</h3>
+                    <div class="form-grid" style="font-size:0.9rem;">
+                        <div>Extracted Name: <strong id="ocr-extracted-name">N/A</strong></div>
+                        <div>Extracted ID Number: <strong id="ocr-extracted-id" style="font-family:monospace;">N/A</strong></div>
+                        <div>Extracted DOB: <strong id="ocr-extracted-dob">N/A</strong></div>
+                        <div>Fuzzy Match Score: <strong id="ocr-match-score" style="color:var(--accent-emerald);">0%</strong></div>
+                    </div>
+                    <div style="margin-top:0.75rem; font-size:0.75rem; color:var(--text-muted);">
+                        Document Hash (SHA-256): <span id="ocr-doc-hash" style="font-family:monospace;"></span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem; display:flex; justify-content:space-between;">
+                    <button class="btn btn-secondary" onclick="AppFlow.goToStep(2)">⬅ Back</button>
+                    <button class="btn btn-primary" onclick="AppFlow.goToStep(4)">
+                        Proceed to Biometric Face Verification ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 4: Real-Time Live Biometric Face Capture & Continuous Liveness Stream -->
+            <div id="panel-step-4" class="wizard-panel glass-card" style="display:none;">
+                <div class="glass-card-header">
+                    <div>
+                        <h2 class="card-title">📷 Step 4: Real-Time Biometric Face Authentication</h2>
+                        <div style="font-size:0.8rem; color:var(--accent-cyan); margin-top:2px;">
+                            ⚡ Continuous live frame telemetry & active liveness verification
+                        </div>
+                    </div>
+                    <span id="face-status-badge" class="status-pill status-pending">PENDING</span>
+                </div>
+                <div style="text-align: center;">
+                    <p style="color:var(--text-secondary); margin-bottom:1rem;">
+                        Keep your face centered. The live biometric engine continuously evaluates facial quality, liveness, and cosine similarity.
+                    </p>
+
+                    <!-- Biometric Telemetry Live HUD Bar -->
+                    <div style="display:flex; justify-content:center; gap:1.25rem; flex-wrap:wrap; margin-bottom:1rem; background:rgba(15,23,42,0.6); padding:0.6rem 1rem; border-radius:var(--radius-md); border:1px solid var(--border-color); max-width:640px; margin-left:auto; margin-right:auto;">
+                        <span id="face-liveness-badge" class="status-pill status-verified">● LIVENESS ACTIVE</span>
+                        <span style="font-size:0.85rem; color:var(--text-muted);">Frame Quality: <strong id="face-quality-display" style="color:var(--accent-cyan);">94% (Optimal)</strong></span>
+                        <span style="font-size:0.85rem; color:var(--text-muted);">Live Similarity: <strong id="face-score-display" style="color:var(--accent-emerald);">--%</strong></span>
+                    </div>
+
+                    <div class="camera-box">
+                        <video id="webcam-video" autoplay playsinline muted></video>
+                        <div class="camera-overlay"></div>
+                        <div class="camera-scanning-line"></div>
+                    </div>
+
+                    <div style="display:flex; justify-content:center; gap:1rem; margin-bottom:1.5rem;">
+                        <button class="btn btn-primary btn-lg" onclick="AppFlow.captureAndVerifyFace()">
+                            🔒 Lock Biometric Embedding & Verify
+                        </button>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem; display:flex; justify-content:space-between;">
+                    <button class="btn btn-secondary" onclick="AppFlow.goToStep(3)">⬅ Back</button>
+                    <button class="btn btn-primary" onclick="AppFlow.goToStep(5)">
+                        Proceed to OTP Possession Check ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 5: Real-Time Mobile TOTP Verification with Countdown -->
+            <div id="panel-step-5" class="wizard-panel glass-card" style="display:none;">
+                <div class="glass-card-header">
+                    <div>
+                        <h2 class="card-title">📱 Step 5: Mobile Possession TOTP Verification</h2>
+                        <div style="font-size:0.8rem; color:var(--accent-cyan); margin-top:2px;">
+                            ⚡ Time-Based One-Time Password with live countdown expiry timer (RFC 6238)
+                        </div>
+                    </div>
+                    <span id="otp-status-badge" class="status-pill status-pending">PENDING</span>
+                </div>
+                <div style="max-width: 500px; margin: 0 auto; text-align:center;">
+                    <p style="color:var(--text-secondary); margin-bottom:1.25rem;">
+                        A time-based one-time password (TOTP) will be generated for your registered mobile number.
+                    </p>
+
+                    <button class="btn btn-secondary" onclick="AppFlow.requestOTP()" style="margin-bottom:1.5rem;">
+                        📩 Generate / Dispatch Simulated SMS OTP
+                    </button>
+
+                    <!-- Simulated SMS Dev Popover -->
+                    <div id="simulated-sms-box" style="display:none; background:rgba(99,102,241,0.15); border:1px dashed var(--accent-indigo); padding:1rem; border-radius:var(--radius-sm); margin-bottom:1.5rem;">
+                        <div style="font-size:0.8rem; color:var(--accent-indigo-light); font-weight:700;">[SIMULATED SMS GATEWAY INBOX]</div>
+                        <div style="margin-top:4px;">Your OTP is: <strong id="simulated-otp-code" style="font-size:1.2rem; letter-spacing:2px; color:#fff;">------</strong></div>
+                        <div style="margin-top:6px; font-size:0.75rem; color:var(--text-muted); display:flex; justify-content:space-between; align-items:center;">
+                            <span>Expires in: <strong id="otp-timer-display" style="color:var(--accent-amber);">05:00</strong></span>
+                            <span>Algorithm: HMAC-SHA1</span>
+                        </div>
+                        <div class="otp-timer-track" style="margin-top:4px; height:4px; background:rgba(255,255,255,0.1); border-radius:9999px; overflow:hidden;">
+                            <div id="otp-timer-bar" style="width:100%; height:100%; background:var(--accent-amber); transition:width 1s linear;"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="text-align:left; margin-bottom:1.25rem;">
+                        <label>Enter 6-Digit OTP Code:</label>
+                        <input type="text" id="otp-input-field" maxlength="6" placeholder="e.g. 481920" style="text-align:center; font-size:1.4rem; letter-spacing:4px;">
+                    </div>
+
+                    <button class="btn btn-success btn-lg" style="width:100%;" onclick="AppFlow.verifyEnteredOTP()">
+                        ✅ Verify OTP Code in Real-Time
+                    </button>
+                </div>
+
+                <div style="margin-top: 1.5rem; display:flex; justify-content:space-between;">
+                    <button class="btn btn-secondary" onclick="AppFlow.goToStep(4)">⬅ Back</button>
+                    <button class="btn btn-primary" onclick="AppFlow.goToStep(6)">
+                        Proceed to CIBIL Bureau Lookup ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 6: Real-Time CIBIL Multi-Attribute Correlation Stream -->
+            <div id="panel-step-6" class="wizard-panel glass-card" style="display:none;">
+                <div class="glass-card-header">
+                    <div>
+                        <h2 class="card-title">🏢 Step 6: Real-Time CIBIL Credit Bureau Verification</h2>
+                        <div style="font-size:0.8rem; color:var(--accent-cyan); margin-top:2px;">
+                            ⚡ Multi-attribute identity correlation & real-time credit score retrieval
+                        </div>
+                    </div>
+                    <span id="cibil-status-badge" class="status-pill status-pending">PENDING</span>
+                </div>
+                
+                <p style="color:var(--text-secondary); margin-bottom:1.25rem;">
+                    Performs multi-attribute correlation (Name + DOB + PAN + Mobile). Detects same-name impersonation attempts and queries historical credit score.
+                </p>
+
+                <button class="btn btn-primary btn-lg" onclick="AppFlow.runCIBILVerification()">
+                    🔎 Query Credit Bureau & Correlate Identity
+                </button>
+
+                <!-- Multi-Attribute Correlation Stream Matrix -->
+                <div id="cibil-correlation-matrix" style="display:none; margin-top:1.5rem; background:rgba(15,23,42,0.7); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem;">
+                    <h3 style="font-size:0.95rem; margin-bottom:0.75rem; color:var(--text-primary);">
+                        Real-Time Identity Attribute Matching Matrix:
+                    </h3>
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:0.75rem; margin-bottom:1rem;">
+                        <div style="background:rgba(255,255,255,0.02); padding:0.6rem; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+                            <div style="font-size:0.75rem; color:var(--text-muted);">Legal Full Name</div>
+                            <span id="cibil-mat-name" class="status-pill status-pending">CHECKING...</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.02); padding:0.6rem; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+                            <div style="font-size:0.75rem; color:var(--text-muted);">Date of Birth</div>
+                            <span id="cibil-mat-dob" class="status-pill status-pending">CHECKING...</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.02); padding:0.6rem; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+                            <div style="font-size:0.75rem; color:var(--text-muted);">PAN Number</div>
+                            <span id="cibil-mat-pan" class="status-pill status-pending">CHECKING...</span>
+                        </div>
+                        <div style="background:rgba(255,255,255,0.02); padding:0.6rem; border-radius:var(--radius-sm); border:1px solid var(--border-color);">
+                            <div style="font-size:0.75rem; color:var(--text-muted);">Mobile Telemetry</div>
+                            <span id="cibil-mat-mobile" class="status-pill status-pending">CHECKING...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CIBIL Result Card -->
+                <div id="cibil-score-card" style="display:none; margin-top:1rem; background:rgba(0,0,0,0.4); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.5rem;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.25rem;">
+                        <div>
+                            <div style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Bureau Credit Score</div>
+                            <div id="cibil-score-val" style="font-size:2rem; font-weight:800; color:var(--accent-emerald);">810</div>
+                        </div>
+                        <div>
+                            <div style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Control Number</div>
+                            <div id="cibil-control-num" style="font-family:monospace; font-weight:700;">CIBIL-2026-884910</div>
+                        </div>
+                        <div>
+                            <div style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Credit Band</div>
+                            <div style="font-size:1.4rem; font-weight:700; color:var(--accent-emerald);">PRIME (LOW RISK)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem; display:flex; justify-content:space-between;">
+                    <button class="btn btn-secondary" onclick="AppFlow.goToStep(5)">⬅ Back</button>
+                    <button class="btn btn-primary" onclick="AppFlow.goToStep(7)">
+                        Proceed to ML Risk & Final Decision ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 7: Real-Time 7-Gate Pipeline Execution & Explainable SHAP Decision -->
+            <div id="panel-step-7" class="wizard-panel glass-card" style="display:none;">
+                <div class="glass-card-header">
+                    <div>
+                        <h2 class="card-title">⚖️ Step 7: Real-Time 7-Gate Pipeline & Explainable ML Sanction</h2>
+                        <div style="font-size:0.8rem; color:var(--accent-cyan); margin-top:2px;">
+                            ⚡ Zero-Trust multi-gate execution engine with sub-second decisioning and SHA-256 blockchain proof
+                        </div>
+                    </div>
+                    <span id="final-decision-badge" class="status-pill status-pending">PENDING</span>
+                </div>
+
+                <div style="margin-bottom:1.5rem;">
+                    <button class="btn btn-success btn-lg" onclick="AppFlow.runCompositeDecision()">
+                        ⚡ Run Real-Time 7-Gate Multi-Verification Pipeline
+                    </button>
+                </div>
+
+                <!-- Live 7-Gate Multi-Verification Pipeline Execution Visualizer -->
+                <div id="pipeline-execution-stream" style="display:none; margin-bottom:1.5rem; background:rgba(15,23,42,0.8); border:1px solid var(--border-color); border-radius:var(--radius-md); padding:1.25rem;">
+                    <h3 style="font-size:0.95rem; margin-bottom:1rem; color:var(--text-primary); display:flex; align-items:center; gap:0.5rem;">
+                        <span class="live-pulse-dot"></span> Real-Time Multi-Gate Execution Pipeline Status:
+                    </h3>
+                    <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.85rem;">
+                        <div id="gate-1-ocr" class="gate-row" style="display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0.75rem; background:rgba(255,255,255,0.02); border-radius:4px;">
+                            <span>Gate 1: Document OCR Text Parser & Fuzzy Match</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;"><span class="gate-status status-pill status-pending">PENDING</span><span class="gate-lat" style="color:var(--text-muted); font-family:monospace;">--ms</span></div>
+                        </div>
+                        <div id="gate-2-face" class="gate-row" style="display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0.75rem; background:rgba(255,255,255,0.02); border-radius:4px;">
+                            <span>Gate 2: Live Biometric Facial Cosine Similarity</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;"><span class="gate-status status-pill status-pending">PENDING</span><span class="gate-lat" style="color:var(--text-muted); font-family:monospace;">--ms</span></div>
+                        </div>
+                        <div id="gate-3-otp" class="gate-row" style="display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0.75rem; background:rgba(255,255,255,0.02); border-radius:4px;">
+                            <span>Gate 3: Mobile TOTP Cryptographic Possession Check</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;"><span class="gate-status status-pill status-pending">PENDING</span><span class="gate-lat" style="color:var(--text-muted); font-family:monospace;">--ms</span></div>
+                        </div>
+                        <div id="gate-4-cibil" class="gate-row" style="display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0.75rem; background:rgba(255,255,255,0.02); border-radius:4px;">
+                            <span>Gate 4: Multi-Attribute CIBIL Credit Bureau Verification</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;"><span class="gate-status status-pill status-pending">PENDING</span><span class="gate-lat" style="color:var(--text-muted); font-family:monospace;">--ms</span></div>
+                        </div>
+                        <div id="gate-5-dti" class="gate-row" style="display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0.75rem; background:rgba(255,255,255,0.02); border-radius:4px;">
+                            <span>Gate 5: Cashflow Solvency & Debt-to-Income (DTI) Gate</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;"><span class="gate-status status-pill status-pending">PENDING</span><span class="gate-lat" style="color:var(--text-muted); font-family:monospace;">--ms</span></div>
+                        </div>
+                        <div id="gate-6-ml" class="gate-row" style="display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0.75rem; background:rgba(255,255,255,0.02); border-radius:4px;">
+                            <span>Gate 6: Gradient Boosting Credit Risk & SHAP XAI Scoring</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;"><span class="gate-status status-pill status-pending">PENDING</span><span class="gate-lat" style="color:var(--text-muted); font-family:monospace;">--ms</span></div>
+                        </div>
+                        <div id="gate-7-chain" class="gate-row" style="display:flex; justify-content:space-between; align-items:center; padding:0.4rem 0.75rem; background:rgba(255,255,255,0.02); border-radius:4px;">
+                            <span>Gate 7: SHA-256 Chained Blockchain Block Notarization</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;"><span class="gate-status status-pill status-pending">PENDING</span><span class="gate-lat" style="color:var(--text-muted); font-family:monospace;">--ms</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="final-decision-panel" style="display:none;">
+                    <!-- Sanction Certificate / Decision Banner -->
+                    <div class="certificate" style="margin-bottom:2rem;">
+                        <div class="certificate-badge">VERIFIED BY SMARTLOAN</div>
+                        <h2 style="color:var(--accent-emerald); font-size:1.5rem; margin-bottom:0.5rem;">
+                            OFFICIAL LOAN SANCTION RECOMMENDATION
+                        </h2>
+                        <p style="color:var(--text-secondary); margin-bottom:1.5rem;" id="final-decision-reason">
+                            All 7 Verification & Risk gates successfully passed.
+                        </p>
+
+                        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1.5rem;">
+                            <div>
+                                <div style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Sanctioned Amount</div>
+                                <div id="final-approved-amount" style="font-size:1.8rem; font-weight:800; color:#fff;">INR 500,000</div>
+                            </div>
+                            <div>
+                                <div style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Interest Rate</div>
+                                <div style="font-size:1.8rem; font-weight:800; color:var(--accent-indigo-light);">10.5% p.a.</div>
+                            </div>
+                            <div>
+                                <div style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase;">Monthly EMI</div>
+                                <div id="final-emi-display" style="font-size:1.8rem; font-weight:800; color:#fff;">INR 16,251</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Explainable AI (SHAP) Feature Contributions Section -->
+                    <div style="margin-bottom:2rem;">
+                        <h3 style="font-size:1.1rem; margin-bottom:0.75rem; display:flex; align-items:center; gap:0.5rem;">
+                            🧠 Explainable AI (SHAP) - Feature Contribution Breakdown
+                        </h3>
+                        <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:1rem;">
+                            Explains how key applicant financial attributes influenced the machine learning risk prediction:
+                        </p>
+                        <div id="shap-chart-container"></div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 1.5rem; display:flex; justify-content:space-between;">
+                    <button class="btn btn-secondary" onclick="AppFlow.goToStep(6)">⬅ Back</button>
+                    <button class="btn btn-primary" onclick="AppFlow.showSection('blockchain-section')">
+                        Inspect Blockchain Immutable Ledger ➔
+                    </button>
+                </div>
+            </div>
+
+            <!-- Floating Real-Time Data Collection & Verification Telemetry Bar -->
+            <div id="applicant-realtime-telemetry-bar" class="telemetry-floating-bar">
+                <div class="telemetry-inner">
+                    <div class="telemetry-col">
+                        <div class="telemetry-indicator">
+                            <span class="live-pulse-dot"></span>
+                            <span class="telemetry-label">REAL-TIME DATA COLLECTION STREAM</span>
+                        </div>
+                        <div class="telemetry-sub" id="telemetry-collected-count">5/5 Fields Collected</div>
+                    </div>
+                    <div class="telemetry-divider"></div>
+                    <div class="telemetry-col">
+                        <div class="telemetry-stat-label">KYC Verification Readiness</div>
+                        <div class="telemetry-stat-val" id="telemetry-readiness-val">100% Complete</div>
+                    </div>
+                    <div class="telemetry-divider"></div>
+                    <div class="telemetry-col">
+                        <div class="telemetry-stat-label">Live Verification Gateway</div>
+                        <div class="telemetry-stat-val" style="color:var(--accent-emerald);">● 7 Gates Connected (~18ms)</div>
+                    </div>
+                    <div class="telemetry-divider"></div>
+                    <div class="telemetry-col telemetry-action">
+                        <button class="btn btn-sm btn-secondary" onclick="AppFlow.showSection('monitoring-section')">
+                            📊 Live Telemetry Console ➔
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ========================================================
+             SECTION 2: BLOCKCHAIN INTEGRITY & TAMPER EXPLORER
+             ======================================================== -->
+        <section id="blockchain-section" class="view-section">
+            <div class="hero-banner">
+                <h1 class="hero-title">⛓️ Cryptographic Blockchain Integrity Layer</h1>
+                <p class="hero-desc">
+                    Immutable SHA-256 chained blocks. Every approved loan transaction stores Merkle verification hashes on-chain. Realtime audit detects any out-of-band database tampering.
+                </p>
+            </div>
+
+            <div class="glass-card" style="margin-bottom:2rem;">
+                <div class="glass-card-header">
+                    <h2 class="card-title">Ledger Status & Cryptographic Audit</h2>
+                    <div id="blockchain-audit-report" class="status-pill status-valid">
+                        BLOCKCHAIN AUDIT: ALL BLOCKS VALID
+                    </div>
+                </div>
+                <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+                    <button class="btn btn-primary" onclick="AppFlow.loadBlockchainLedger()">
+                        🔄 Re-run Cryptographic Audit
+                    </button>
+                    <button class="btn btn-danger" onclick="AppFlow.simulateBlockchainTamper()">
+                        💥 Simulate Database Record Alteration (Tamper Test)
+                    </button>
+                    <button class="btn btn-success" onclick="AppFlow.restoreBlockchainLedger()">
+                        🛠️ Restore Ledger Hashes
+                    </button>
+                </div>
+            </div>
+
+            <h3 style="font-size:1.15rem; margin-bottom:1rem;">Chained Verification Blocks:</h3>
+            <div class="blockchain-chain" id="blockchain-ledger-cards">
+                <!-- Dynamically populated -->
+            </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION 3: ADMIN & UNDERWRITER COMMAND CENTER
+             ======================================================== -->
+        <section id="admin-section" class="view-section">
+            <div class="hero-banner">
+                <h1 class="hero-title">🏛️ Bank Underwriter Command Center</h1>
+                <p class="hero-desc">
+                    Comprehensive bank officer view across all applicant verification pipelines, credit risk distributions, manual review queues, and audit inspection trails.
+                </p>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Applications</div>
+                    <div class="kpi-value" id="kpi-total-apps">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Auto-Approved</div>
+                    <div class="kpi-value" id="kpi-approved-apps" style="color:var(--accent-emerald);">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Manual Review Queue</div>
+                    <div class="kpi-value" id="kpi-review-apps" style="color:var(--accent-amber);">0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Total Sanctioned</div>
+                    <div class="kpi-value" id="kpi-sanctioned-amt">INR 0</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Approval Rate</div>
+                    <div class="kpi-value" id="kpi-approval-rate">0%</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-label">Average CIBIL Score</div>
+                    <div class="kpi-value" id="kpi-avg-cibil">0</div>
+                </div>
+            </div>
+
+            <!-- Risk Distribution Summary -->
+            <div class="glass-card" style="margin-bottom:2rem;">
+                <div class="glass-card-header">
+                    <h2 class="card-title">ML Risk Categorization Distribution</h2>
+                </div>
+                <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+                    <div class="status-pill status-verified" id="risk-low-count" style="font-size:0.9rem; padding:0.5rem 1rem;">
+                        0 Low Risk
+                    </div>
+                    <div class="status-pill status-mismatch" id="risk-med-count" style="font-size:0.9rem; padding:0.5rem 1rem;">
+                        0 Medium Risk
+                    </div>
+                    <div class="status-pill status-failed" id="risk-high-count" style="font-size:0.9rem; padding:0.5rem 1rem;">
+                        0 High Risk
+                    </div>
+                </div>
+            </div>
+
+            <!-- Applications Table -->
+            <div class="glass-card">
+                <div class="glass-card-header">
+                    <h2 class="card-title">Loan Applications & Verification Audit Queue</h2>
+                    <div style="display:flex; gap:0.75rem; align-items:center;">
+                        <input type="text" id="admin-search-input" placeholder="Search by name, ID..." oninput="AdminFlow.loadApplications('ALL')" style="padding:0.4rem 0.75rem; font-size:0.85rem;">
+                        <select onchange="AdminFlow.loadApplications(this.value)" style="padding:0.4rem 0.75rem; font-size:0.85rem;">
+                            <option value="ALL">All Statuses</option>
+                            <option value="APPROVED">Approved</option>
+                            <option value="MANUAL_REVIEW">Manual Review</option>
+                            <option value="REJECTED">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Application ID</th>
+                                <th>Applicant</th>
+                                <th>Amount & Terms</th>
+                                <th>CIBIL Status</th>
+                                <th>ML Risk</th>
+                                <th>Blockchain</th>
+                                <th>Decision</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-apps-tbody">
+                            <!-- Populated via API -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================================
+             SECTION 4: REAL-TIME SYSTEM & PIPELINE MONITORING
+             ======================================================== -->
+        <section id="monitoring-section" class="view-section">
+            <div class="hero-banner" style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:1rem;">
+                <div>
+                    <h1 class="hero-title" style="display:flex; align-items:center; gap:0.75rem;">
+                        <span class="live-pulse-dot" id="mon-live-pulse"></span>
+                        Real-Time System Telemetry & Pipeline Monitoring
+                    </h1>
+                    <p class="hero-desc">
+                        Live WebSocket stream delivering sub-second telemetry across Document OCR, Biometric Facial Cosine Similarity, Mock CIBIL Ingestion, Explainable AI (SHAP), and Cryptographic SHA-256 Ledger Mining.
+                    </p>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.75rem; background:rgba(15,23,42,0.6); padding:0.6rem 1.2rem; border-radius:var(--radius-md); border:1px solid var(--border-color);">
+                    <span id="mon-ws-status" class="status-pill status-verified">WS CONNECTED</span>
+                    <span style="font-size:0.85rem; color:var(--text-muted);">Uptime: <strong id="mon-uptime-val" style="color:var(--text-primary);">00h 00m 00s</strong></span>
+                    <span style="font-size:0.85rem; color:var(--text-muted);">CPU: <strong id="mon-cpu-val" style="color:var(--accent-cyan);">--%</strong></span>
+                    <span style="font-size:0.85rem; color:var(--text-muted);">RAM: <strong id="mon-ram-val" style="color:var(--accent-indigo-light);">-- MB</strong></span>
+                </div>
+            </div>
+
+            <!-- Top Monitoring KPI Cards -->
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom:1.5rem;">
+                <div class="stat-card">
+                    <div class="stat-label">Total Telemetry Events</div>
+                    <div class="stat-value" id="mon-total-req">0</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Across all 7 verification gates</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pipeline Pass Rate</div>
+                    <div class="stat-value" id="mon-success-rate" style="color:var(--accent-emerald);">96.2%</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+                        <span id="mon-passed-count" style="color:var(--accent-emerald); font-weight:600;">0</span> Passed | 
+                        <span id="mon-manual-count" style="color:var(--accent-amber); font-weight:600;">0</span> Hold/Review
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">System Throughput</div>
+                    <div class="stat-value" id="mon-throughput" style="color:var(--accent-cyan);">8.4 req/min</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Average End-to-End Latency: 1.85s</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Active Security Flags</div>
+                    <div class="stat-value" id="mon-fraud-count" style="color:var(--accent-rose);">0</div>
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">Biometric, CIBIL & Hash Anomaly Radar</div>
+                </div>
+            </div>
+
+            <!-- Main Telemetry Body: 2 Columns -->
+            <div style="display:grid; grid-template-columns: 1fr 1.6fr; gap:1.5rem; margin-bottom:1.5rem;">
+                
+                <!-- Left Column: Verification Gate Latency & Security Anomaly Radar -->
+                <div style="display:flex; flex-direction:column; gap:1.5rem;">
+                    
+                    <!-- Gate Latencies Benchmark Card -->
+                    <div class="card">
+                        <div class="card-header" style="margin-bottom:1rem;">
+                            <h3 style="font-size:1.05rem; display:flex; align-items:center; gap:0.5rem;">
+                                ⏱️ Verification Gate Latencies
+                            </h3>
+                            <span style="font-size:0.75rem; color:var(--text-muted);">Real-Time Execution Times</span>
+                        </div>
+                        
+                        <div class="latency-list">
+                            <div class="lat-row">
+                                <div class="lat-info">
+                                    <span>Gate 1: Document OCR Text Parser</span>
+                                    <strong id="lat-val-ocr">240 ms</strong>
+                                </div>
+                                <div class="lat-track"><div id="lat-bar-ocr" class="lat-bar" style="width:60%;"></div></div>
+                            </div>
+
+                            <div class="lat-row">
+                                <div class="lat-info">
+                                    <span>Gate 2: Biometric Face Cosine Similarity</span>
+                                    <strong id="lat-val-face">310 ms</strong>
+                                </div>
+                                <div class="lat-track"><div id="lat-bar-face" class="lat-bar bar-purple" style="width:72%;"></div></div>
+                            </div>
+
+                            <div class="lat-row">
+                                <div class="lat-info">
+                                    <span>Gate 3: Mobile TOTP Authentication</span>
+                                    <strong id="lat-val-otp">45 ms</strong>
+                                </div>
+                                <div class="lat-track"><div id="lat-bar-otp" class="lat-bar bar-cyan" style="width:25%;"></div></div>
+                            </div>
+
+                            <div class="lat-row">
+                                <div class="lat-info">
+                                    <span>Gate 4: CIBIL Multi-Attribute Bureau Pull</span>
+                                    <strong id="lat-val-cibil">180 ms</strong>
+                                </div>
+                                <div class="lat-track"><div id="lat-bar-cibil" class="lat-bar bar-amber" style="width:50%;"></div></div>
+                            </div>
+
+                            <div class="lat-row">
+                                <div class="lat-info">
+                                    <span>Gate 5: Gradient Boosting ML + SHAP XAI</span>
+                                    <strong id="lat-val-ml">120 ms</strong>
+                                </div>
+                                <div class="lat-track"><div id="lat-bar-ml" class="lat-bar bar-emerald" style="width:40%;"></div></div>
+                            </div>
+
+                            <div class="lat-row">
+                                <div class="lat-info">
+                                    <span>Gate 6: SHA-256 Blockchain Block Minting</span>
+                                    <strong id="lat-val-chain">95 ms</strong>
+                                </div>
+                                <div class="lat-track"><div id="lat-bar-chain" class="lat-bar bar-rose" style="width:35%;"></div></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Security & Fraud Anomaly Radar -->
+                    <div class="card">
+                        <div class="card-header" style="margin-bottom:0.75rem;">
+                            <h3 style="font-size:1.05rem; display:flex; align-items:center; gap:0.5rem;">
+                                🛡️ Live Fraud & Security Anomaly Radar
+                            </h3>
+                            <span class="brand-tag">ZERO TRUST</span>
+                        </div>
+                        <div id="mon-alerts-container" style="display:flex; flex-direction:column; gap:0.6rem;">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right Column: Live Telemetry Event Log Stream (High-Contrast Console) -->
+                <div class="card" style="display:flex; flex-direction:column;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.5rem; margin-bottom:1rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem;">
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <h3 style="font-size:1.05rem; display:flex; align-items:center; gap:0.5rem;">
+                                ⚡ Live Telemetry Event Stream
+                            </h3>
+                            <span class="mon-live-chip">LIVE FEED</span>
+                        </div>
+
+                        <!-- Action & Control Buttons -->
+                        <div style="display:flex; align-items:center; gap:0.5rem;">
+                            <button class="btn btn-primary" style="padding:0.35rem 0.75rem; font-size:0.8rem;" onclick="MonitoringFlow.simulateTraffic()">
+                                ⚡ Simulate Live Traffic
+                            </button>
+                            <button id="mon-stream-toggle-btn" class="btn btn-secondary" style="padding:0.35rem 0.75rem; font-size:0.8rem;" onclick="MonitoringFlow.toggleStreaming()">
+                                ⏸️ Pause
+                            </button>
+                            <button class="btn btn-secondary" style="padding:0.35rem 0.6rem; font-size:0.8rem;" onclick="MonitoringFlow.clearLogs()" title="Clear stream logs">
+                                🗑️ Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Filter Tabs -->
+                    <div style="display:flex; gap:0.5rem; margin-bottom:0.75rem;">
+                        <button class="mon-filter-btn active" data-filter="ALL" onclick="MonitoringFlow.setFilter('ALL')">All Events</button>
+                        <button class="mon-filter-btn" data-filter="SUCCESS" onclick="MonitoringFlow.setFilter('SUCCESS')">Successful</button>
+                        <button class="mon-filter-btn" data-filter="ANOMALY" onclick="MonitoringFlow.setFilter('ANOMALY')">Anomalies / Flags</button>
+                    </div>
+
+                    <!-- Scrolling Live Stream Terminal Box -->
+                    <div id="mon-event-stream-box" class="mon-terminal-feed">
+                        <!-- Populated in real time via WebSocket -->
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.75rem; font-size:0.75rem; color:var(--text-muted); border-top:1px solid rgba(255,255,255,0.06); padding-top:0.5rem;">
+                        <span>Protocol: <strong>WebSocket / JSON Stream (RFC 6455)</strong></span>
+                        <span>Buffer: <strong>200 events in memory</strong></span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Backdrop & Card -->
+    <div id="modal-backdrop" class="modal-backdrop" onclick="if(event.target === this) UI.closeModal()">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; border-bottom:1px solid var(--border-color); padding-bottom:0.75rem;">
+                <h2 id="modal-title" style="font-size:1.25rem;">Modal Title</h2>
+                <button onclick="UI.closeModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <div id="modal-body"></div>
+            <div style="margin-top:1.5rem; text-align:right;">
+                <button class="btn btn-secondary" onclick="UI.closeModal()">Close</button>
+                <button id="modal-confirm-btn" class="btn btn-primary" style="display:none; margin-left:0.5rem;">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/api.js"></script>
+    <script src="/static/js/ui_components.js"></script>
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/applicant_flow.js"></script>
+    <script src="/static/js/admin_flow.js"></script>
+    <script src="/static/js/monitoring.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Auth.init();
+            AppFlow.init();
+            MonitoringFlow.init();
+        });
+    </script>
+</body>
+</html>
