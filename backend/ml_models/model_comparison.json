@@ -1,0 +1,36 @@
+{
+  "models_comparison": {
+    "Logistic Regression": {
+      "Accuracy": 92.71,
+      "Precision": 93.44,
+      "Recall": 95.31,
+      "F1_Score": 94.36,
+      "ROC_AUC": 0.9853
+    },
+    "Random Forest": {
+      "Accuracy": 91.43,
+      "Precision": 92.54,
+      "Recall": 94.2,
+      "F1_Score": 93.36,
+      "ROC_AUC": 0.9709
+    },
+    "Gradient Boosting": {
+      "Accuracy": 91.57,
+      "Precision": 92.19,
+      "Recall": 94.87,
+      "F1_Score": 93.51,
+      "ROC_AUC": 0.9765
+    }
+  },
+  "feature_importance": {
+    "monthly_income": 0.029,
+    "loan_amount": 0.0156,
+    "loan_tenure_months": 0.0023,
+    "cibil_score": 0.1409,
+    "active_loans_count": 0.0277,
+    "total_overdue_amount": 0.0845,
+    "credit_utilization_ratio": 0.0527,
+    "dti_ratio": 0.6472
+  },
+  "best_model": "Gradient Boosting"
+}
